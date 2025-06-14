@@ -1,11 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import {APIProvider, Map, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
+import {APIProvider, Map, AdvancedMarker, Pin, MapCameraChangedEvent } from '@vis.gl/react-google-maps';
 import Image from 'next/image'
 import blueDot from '../public/icons/blueBlinkingDot.svg'
 
 import SearchBar from './components/SearchBar';
+import LoginBtns from './components/LoginBtns';
+import Header from './components/Header';
+import QuickActionChips from './components/QuickActionChips';
 
 interface Coords {
   lat: number,
@@ -53,14 +56,17 @@ export default function MapPage() {
   }, [])
 
   return (
-    <>
-      <APIProvider apiKey={apiKey}>
+    <div className='flex w-dvw h-dvh'>
+      <div id='mapContainer' className='w-[70dvw] h-dvh overflow-y-hidden' >
+        <APIProvider apiKey={apiKey}>
           <Map
-            style={{width: '100dvw', height: '100dvh'}}
             center={mapCenter}
             defaultZoom={17}
             disableDefaultUI={true}
-            mapId='3b51350f1553c5e4b1f29045'
+            onCameraChanged={ (ev: MapCameraChangedEvent) => {
+              console.log('camera changed: ', ev.detail.center, 'zoom: ', ev.detail.zoom)
+            } }
+            mapId='a0407ea725346dc3817df4f3'
           >
             <AdvancedMarker
               position={userLocation}
@@ -73,10 +79,20 @@ export default function MapPage() {
                 alt="Blinking Blue Dot Marker"
               />
             </AdvancedMarker>
-
-            <SearchBar />
+            <div className='absolute top-4 left-1/2 -translate-x-1/2 z-50 p-4'>
+                <SearchBar />
+                <QuickActionChips />
+            </div>
+            
           </Map>
-      </APIProvider>
-    </>
+        </APIProvider>
+      </div>
+      <div id='listings' className='w-[30dvw] h-dvh overflow-y-auto'>
+          <div id='accountBtns' className='flex flex-col w-full items-end gap-6 p-8'>
+            <LoginBtns />
+            <Header />
+          </div>
+      </div>
+    </div>
   )
 }
